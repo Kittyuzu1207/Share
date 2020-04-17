@@ -51,5 +51,5 @@ et al., 2014; Bouazizi and Ohtsuki, 2015) 包括：n-grams, word’s sentiment, 
 
 ### 3.1 Image Feature Representation 图象特征表示
 使用ResNet-50 V2 (He et al., 2016)来获得tweet图象的表征。为了对模型进行微调，将预训练模型的最后一个完全连接层用一个新的FC层替换。参考(Wang et al., 2017)的工作，将输入图像 $I$ 重新调整为448×448，并划分为14×14的区域。每个区域 $I_i$ （i=1,2…，196）然后通过ResNet模型发送以获得区域特征表示 ，即原始图像向量。
-$x_i$
+$\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$
 
