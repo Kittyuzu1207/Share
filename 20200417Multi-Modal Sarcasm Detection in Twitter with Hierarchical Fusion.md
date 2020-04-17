@@ -66,7 +66,7 @@ $N_r$是regions的数量，论文中是196。
 ### 3.3 Text Feature Representation 文本特征表示
 使用双向LSTM（bilstm）（Hochreiter and Schmidhuber,1997）获取tweet文本的表示。LSTM在时间步t执行的操作方程式如下：  
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04174.png)  
-其中$W_i$,$W_f$,$W_o$,$U_i$,$U_f$,$U_o$是权重矩阵，$x_t$,$h_t$是t时刻的输入状态和隐态，$\sigma$是 sigmoid函数，(点乘)是按元素的乘积，文本的引导向量guidance vector是各个时间步隐态的算术平均值：  
+其中$W_i$,$W_f$,$W_o$,$U_i$,$U_f$,$U_o$是权重矩阵，$x_t$,$h_t$是t时刻的输入状态和隐态，$\sigma$是 sigmoid函数，$\cdot$是按元素的乘积，文本的引导向量guidance vector是各个时间步隐态的算术平均值：  
 $v_text=\frac{\sum^{i=1 \to \L}{h_t}}{L}  
 
 ### 3.4 Early Fusion 早期融合  
@@ -85,6 +85,12 @@ $v_text=\frac{\sum^{i=1 \to \L}{h_t}}{L}
 在表征融合之后，$v_image$,$v_attr$,$v_text$就表示重构后的模态向量，作为后面layer的input  
 
 ### 3.6 Modality Fusion 模态融合  
+我们不是简单地将来自不同模式的特征向量串联concat起来形成一个更长的向量，而是受（Gu et al,2018a）的工作启发的模式融合。首先将每个模态的特征向量$v_m$ 转换为一个固定长度的向量${v_m}^'$,然后采用两层的前馈神经网络来计算每个模态m的attention权重，它将用来计算${v_m}^'$的加权平均。最终结果是一个固定长度的向量$v_fused$。  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04177.png)  
+其中m是某个模态，$\hat{α}$是包含$\hat{α_m}$的向量。$W_m1$,$W_m2$,$W_m3$是权重矩阵,$b_m1$,$b_m2$,$b_m3$是biases。  
+
+### 3.7 Classification layer 分类层  
+我们使用两层完全连接的神经网络作为分类层。隐藏层和输出层的激活函数分别为元素级ReLu函数和sigmoid函数。损失函数为交叉熵。  
 
 
 
