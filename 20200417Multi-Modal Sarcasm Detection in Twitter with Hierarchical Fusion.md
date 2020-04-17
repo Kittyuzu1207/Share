@@ -113,7 +113,7 @@ $v_text=\frac{\sum^{i=1 \to \L}{h_t}}{L}
 - Text(CNN)：用CNN对文本建模  
 - Image:使用ResNet的image vector  
 - Attr：只用attribute features 
-- Concat： (2) means concatenating text features and image features, while (3) means concatenating all text, image and attribute features.  
+- Concat： (2) means concatenating text features and image features, while (3) means concatenating all text, image and attribute features.
 可见，仅基于图像或属性模态的模型表现不好，而基于文本和文本模态的模型表现得更好，说明了文本模态的重要作用。Concat（3）模型的性能优于Concat（2），因为添加属性作为一种新的模态实际上引入了图像的外部语义信息，并在模型无法提取有效的图像特征时提供帮助。我们提出的分层融合模型进一步提高了性能，达到了最新的分数，表明我们的融合模型更有效地利用了三种模式的特点。  
 我们进一步在我们提出的模型和文本（Bi LSTM）、Concat（2）、Concat（3）模型之间应用符号测试。零假设是我们提出的模型并没有比每个基线模型表现更好。符号测试的统计数据见表4。所有显著性水平均小于0.05。因此，所有的零假设都被拒绝，我们提出的模型明显优于基线模型。  
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041711.png)  
