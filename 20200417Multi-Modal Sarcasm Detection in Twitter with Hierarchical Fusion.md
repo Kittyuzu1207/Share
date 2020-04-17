@@ -56,4 +56,8 @@ $$v_{region_i}=ResNet({I_i))$$
 $$v_image=\frac{{\displaystyle \sum^{i=1 \to \{N_r}}{v_{region_i}}{N_r}$$  
 $N_r$是regions的数量，论文中是196。
 
+### 3.2 Attribute Feature Representation 属性特征表示
+之前在图像字幕和视觉问答中的工作（Wu et al，2016年）引入图象属性作为图像的高级概念high-level concepts。在他们的工作中，提出了单标签和多标签损失来训练属性预测CNN，其参数被用来生成最终的图像表示。虽然它们使用参数共享来完成带有属性标记任务的图像表示，但我们采用了更明确的方法。我们将属性作为连接tweet文本和图像的额外形式，直接使用每个tweet图像的五个预测属性的单词嵌入作为原始属性向量。  
+我们首先使用ResNet-101和COCO图像字幕数据集训练属性预测器（Lin et al,2014）。我们通过从COCO数据集的句子中提取1000个属性来构建多标签数据集。我们使用在ImageNet上预先训练的ResNet模型（Russakovsky et al,2015），并在多标签数据集上对其进行微调。然后使用属性预测器预测每个图像的五个属性ai（i=1，…，5）。
+
 
