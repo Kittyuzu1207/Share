@@ -113,7 +113,7 @@ $v_text=\frac{\sum^{i=1 \to \L}{h_t}}{L}
 - Text(CNN)：用CNN对文本建模  
 - Image:使用ResNet的image vector  
 - Attr：只用attribute features 
-- Concat： (2) means concatenating text features and image features, while (3) means concatenating all text, image and attribute features.
+- Concat： (2) means concatenating text features and image features, while (3) means concatenating all text, image and attribute features.   
 可见，仅基于图像或属性模态的模型表现不好，而基于文本和文本模态的模型表现得更好，说明了文本模态的重要作用。Concat（3）模型的性能优于Concat（2），因为添加属性作为一种新的模态实际上引入了图像的外部语义信息，并在模型无法提取有效的图像特征时提供帮助。我们提出的分层融合模型进一步提高了性能，达到了最新的分数，表明我们的融合模型更有效地利用了三种模式的特点。  
 我们进一步在我们提出的模型和文本（Bi LSTM）、Concat（2）、Concat（3）模型之间应用符号测试。零假设是我们提出的模型并没有比每个基线模型表现更好。符号测试的统计数据见表4。所有显著性水平均小于0.05。因此，所有的零假设都被拒绝，我们提出的模型明显优于基线模型。  
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041711.png)  
@@ -125,8 +125,19 @@ $v_text=\frac{\sum^{i=1 \to \L}{h_t}}{L}
 
 ## 6 Visualization Analysis
 ### 6.1 Running Examples  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041713.png)  
+图3展示了一些讽刺的例子，我们提出的模型能够正确地预测它们，而只有文本模态的模型却不能正确地标记它们。结果表明，在我们的模型中，图像和属性有助于讽刺检测。举个例子，一个有危险的铲球的图片和一个写着“不危险”的文字在例子（a）中表达了强烈的讽刺。“尊敬的客户”与示例（b）中的凌乱包裹以及“凌乱”属性相矛盾。没有图像，成功地检测这些讽刺的例子几乎是不可能的。只有文本情态的模型无法检测到例如（c）的讽刺，尽管单词so在示例（c）中重复了好几次。然而，通过图像和属性模式，我们提出的模型可以正确地检测这些推文中的讽刺。  
 
+### 6.2 Attention Visualization
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041714.png)  
+图4显示了在表示融合阶段的一些示例的注意力。我们的模型能够成功地将注意力集中在图像的适当部分、句子中的基本单词和重要属性上。例如，我们的模型更关注不悦的表情符号和文本中的“amazing”一词，而在示例（a）中更关注阴暗的天空，因此，由于这两种模态的不一致，这条推特被预测为讽刺推特。在示例（b）中，我们的模型关注文本中的“严肃”一词，并关注图片中与“丰盛早餐”相矛盾的简单一餐，揭示了这条微博应该是讽刺性的。在示例（c）中，“yum”一词、“meat”属性和图像中的食物表示tweet的讽刺含义。  
 
+### 6.3 Error Analysis
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041715.png)  
+图5显示了一个我们的模型未能正确标记的例子，在这个例子中，图片中的侮辱性手势与短语“谢谢”形成对比。然而，该模型无法获得这种手势是侮辱的常识。因此，这张照片的注意力不集中在侮辱性的手势上。此外，属性也不能揭示图片的侮辱性含义，因此我们的模型无法预测这条微博是讽刺性的。  
+
+## 7 Conclusion and Future Work
+本文提出了一种新的层次融合模型，充分利用图像、文本和图像属性三种模式来解决具有挑战性的多模态讽刺检测问题。评估结果证明了我们提出的模型的有效性和三种模式的有用性。在以后的工作中，我们将把其他的形式，如音频，纳入到讽刺检测任务中，我们还将研究如何在我们的模型中使用常识知识。  
 
 
 
