@@ -92,5 +92,41 @@ $v_text=\frac{\sum^{i=1 \to \L}{h_t}}{L}
 ### 3.7 Classification layer 分类层  
 我们使用两层完全连接的神经网络作为分类层。隐藏层和输出层的激活函数分别为元素级ReLu函数和sigmoid函数。损失函数为交叉熵。  
 
+## 4 Dataset and Preprocessing  
+由于没有公开的数据集可用于评估多模态讽刺检测任务，我们构建了自己的数据集。我们收集和预处理我们的数据类似（Schifanella等人，2016）。我们收集包含图片和一些特殊标签（如讽刺等）的英文推文作为正面示例（即讽刺），收集带有图片但没有负面示例（即非讽刺）标签的英文推文。我们进一步清理数据如下。首先，我们将含有讽刺、讽刺、反讽、讽刺的推文作为常规词汇丢弃。我们还丢弃包含url的tweets，以避免引入其他信息。此外，我们丢弃经常与讽刺性推文一起出现的词语，从而可能表达讽刺，例如笑话、幽默和炫耀。我们将数据分为训练集、开发集和测试集，比例为80%:10%:10%。为了更准确地评估模型，我们手动检查开发集和测试集，以确保标签的准确性。表1列出了我们最终数据集的统计数据。  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04178.png)  
+对于预处理，我们首先用一个特定的符号<user>替换user mentions。然后，我们使用NLTK工具包分离单词、表情符号和标签。我们还将标签符号#与标签分开，并将大写字母替换为小写字母。最后，单词在训练集中只出现一次，而不是出现在训练集中而是出现在开发集或测试集中，这些单词被替换为某种符号<unk>  
+
+## 5 Experiments
+### 5.1 Training Details
+- Pre-trained models：pre-trained ResNet model is available online，word embedding 用Glove  
+- Fine tuning： Parameters ofthe pre-trainedResNet model 在训练中是固定的.Parameters of word and attribute embeddings 在训练中更新.
+- Optimization：Adam optimizer
+- Hyper-parameters：fusion时神经网络的隐层大小hidden layer size是其输入大小input size的一半。表2   
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04179.png)  
+
+### 5.2 Comparison Results  
+结果对比  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041710.png)  
+- Random:随机预测是否为反讽  
+- Text(Bi-LSTM)：用Bi-LSTM对文本建模再用clf层预测  
+- Text(CNN)：用CNN对文本建模  
+- Image:使用ResNet的image vector  
+- Attr：只用attribute features 
+- Concat： (2) means concatenating text features and image features, while (3) means concatenating all text, image and attribute features.  
+可见，仅基于图像或属性模态的模型表现不好，而基于文本和文本模态的模型表现得更好，说明了文本模态的重要作用。Concat（3）模型的性能优于Concat（2），因为添加属性作为一种新的模态实际上引入了图像的外部语义信息，并在模型无法提取有效的图像特征时提供帮助。我们提出的分层融合模型进一步提高了性能，达到了最新的分数，表明我们的融合模型更有效地利用了三种模式的特点。  
+我们进一步在我们提出的模型和文本（Bi LSTM）、Concat（2）、Concat（3）模型之间应用符号测试。零假设是我们提出的模型并没有比每个基线模型表现更好。符号测试的统计数据见表4。所有显著性水平均小于0.05。因此，所有的零假设都被拒绝，我们提出的模型明显优于基线模型。  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041711.png)  
+
+### 5.3 Component Analysis of Our Model 
+我们进一步评估了早期融合、表征融合以及早期融合中不同模态表征对最终性能的影响。评价结果见表5。
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/041712.png)  
+我们可以看到，去除早期融合会降低性能，这说明早期融合可以改善文本的表示。早期的属性表示融合比图像表示融合效果好，说明了文本表示和图像表示之间的差距。如果去除了表示融合，则性能也会下降，这说明表示融合是必要的，表示融合可以细化每个模态的特征表示。
+
+## 6 Visualization Analysis
+### 6.1 Running Examples  
+
+
+
 
 
