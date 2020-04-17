@@ -10,7 +10,7 @@
 之前基于Twitter的讽刺检测工作主要集中在文本特征上，提出了许多有监督的方法，包括具有词汇特征的传统机器学习方法(Bouazizi and Ohtsuki, 2015;
 Ptáˇ cek et al., 2014)以及深度学习的方法  
 然而，只基于文本特征会存在一些问题。比如，像“What a wonderful weather!” 配图一个很阴沉天气这样的讽刺就无法识别出来，而图片能够帮助我们确定tweet文本是否有反讽。如下面a),b)  
-![img] (https://github.com/Kittyuzu1207/Share/blob/master/img/04171.png)  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04171.png)  
 在这篇文章中，作者提出了多模态层次融合模型来检测反讽。选择了三个方面的特征： text, image and image attribute features  
 - 早期的融合： the attribute features are used to initialize a bi-directional LSTM network (Bi-LSTM)，再用Bi-LSTM来捕捉文本特征  
 - 然后对这三个特征进行表示融合，并将其转化为重构的表示向量。  
