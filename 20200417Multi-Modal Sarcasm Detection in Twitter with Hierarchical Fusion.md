@@ -59,11 +59,32 @@ $N_r$是regions的数量，论文中是196。
 ### 3.2 Attribute Feature Representation 属性特征表示
 之前在图像字幕和视觉问答中的工作（Wu et al，2016年）引入图象属性作为图像的高级概念high-level concepts。在他们的工作中，提出了单标签和多标签损失来训练属性预测CNN，其参数被用来生成最终的图像表示。虽然它们使用参数共享来完成带有属性标记任务的图像表示，但我们采用了更明确的方法。我们将属性作为连接tweet文本和图像的额外形式，直接使用每个tweet图像的五个预测属性的单词嵌入作为原始属性向量。  
 我们首先使用ResNet-101和COCO图像字幕数据集训练属性预测器（Lin et al,2014）。我们通过从COCO数据集的句子中提取1000个属性来构建多标签数据集。我们使用在ImageNet上预先训练的ResNet模型（Russakovsky et al,2015），并在多标签数据集上对其进行微调。然后使用属性预测器预测每个图像的五个属性ai（i=1，…，5）。  
-利用加权平均法生成属性引导向量。原始属性向量$e(a_i)$通过两层神经网络获得用于构造属性引导向量$v_attr$的注意权重$α_i$。相关方程如下:
+利用加权平均法生成属性引导向量。原始属性向量$e(a_i)$通过两层神经网络获得用于构造属性引导向量$v_attr$的注意权重$α_i$。相关方程如下:  
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04173.png)  
 其中$α_i$是第i个图象属性，字面意义上就是从1000个单词中选出一个，e 是 GloVe embedding operation,$W_1$和$W_2$是权重矩阵,$b_1$和$b_2$是偏差bias，$N_a$是属性的数量，在这里取5  
 
 ### 3.3 Text Feature Representation 文本特征表示
+使用双向LSTM（bilstm）（Hochreiter and Schmidhuber,1997）获取tweet文本的表示。LSTM在时间步t执行的操作方程式如下：  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04174.png)  
+其中$W_i$,$W_f$,$W_o$,$U_i$,$U_f$,$U_o$是权重矩阵，$x_t$,$h_t$是t时刻的输入状态和隐态，$\sigma$是 sigmoid函数，(点乘)是按元素的乘积，文本的引导向量guidance vector是各个时间步隐态的算术平均值：  
+$v_text=\frac{\sum^{i=1 \to \L}{h_t}}{L}  
+
+### 3.4 Early Fusion 早期融合  
+在文本分类任务中，Bi-LSTM的初始状态通常设置为零，但它是一个潜在的多模态信息输入点，可以促进模态对文本的理解。在该模型中，我们采用非线性变换的属性引导向量作为Bi-LSTM的初始状态。  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04175.png)  
+其中$h_{f_0}$，$c_{f_0}$是前向LSTM的初始状态，$h_{b_0}$，$c_{b_0}$是后向LSTM的初始状态，ReLU表示元素级别的ReLU激活函数，$W$和$b$是权重矩阵和偏差。  
+我们同样也尝试了使用图象的引导向量来作早期融合（作LSTM的初始状态），但效果不好   
+
+### 3.5 Representation Fusion 表征融合 
+受到VQA视觉问答中attention机制的启发，表征融合旨在使用低维度的原始向量和高维度的引导向量来重构特征向量$v_image$,$v_attr$,$v_text$。低维度的原始向量即 文本模态中每个时间步t的隐态{$h_t$},图象模态中的196个rigional vectors，属性模态中的 attribute embeddings。  
+我们使用${X_m}^i$来表示模态m的第i个原始向量。这里的关键问题是计算每个${X_m}^i$的权重。用这个向量加权平均后得到模态m的新的表征。  
+为了使用尽可能多的信息，更准确地建模多个模态之间的关系，在计算每个模态原始向量的权重时，利用所有三种模态的信息，也就是考虑三个模态的引导向量。对于每个模态m的第i个原始向量，根绝不同的模态n的引导向量计算三个引导权重${α_mn}^(i)$。最终的重构权重是规范化后的引导权重的平均值。  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04176.png)  
+其中$m,n\in{text,image,attr}$ 表示模态，${α_mn}^(i)$是模态m的第i个原始向量在模态n引导下的引导权重，${α_mn}$包含了模态m的所有原始向量在模态n引导下的权重。${α_m}^(i)$是模态m的第i个向量最终的重构权重。$L_m$是序列{${X_m}^i$}的长度，$W_mn1$,$W_mn2$是权重矩阵，$b_mn1$,$b_mn2$是偏差bias。  
+
+在表征融合之后，$v_image$,$v_attr$,$v_text$就表示重构后的模态向量，作为后面layer的input  
+
+### 3.6 Modality Fusion 模态融合  
 
 
 
