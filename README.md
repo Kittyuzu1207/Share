@@ -3,6 +3,7 @@ some notes about NLP
 ## 与NLP相关的一些阅读、研讨会的笔记，更新中...  
 ### 研讨会
 #### [20200415 不确定性时代的计算传播学研究](https://github.com/Kittyuzu1207/Share/blob/master/20200415不确定性时代的计算传播学研究.md)   
+#### [20200425ACL 2020 复旦大学系列论文解读1：不同粒度的抽取式文本摘要系统]()
 
 ### NLP相关论文
 #### [20200414 BERT](https://github.com/Kittyuzu1207/Share/blob/master/20200414论文阅读BERT.md)
