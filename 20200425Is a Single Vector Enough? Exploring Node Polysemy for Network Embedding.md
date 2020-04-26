@@ -25,7 +25,11 @@
 ***
 DeepWalk 使用了Skip-gram 模型,该模型使用最大似然估计进行训练，在此我们试图找到使获得的观测值的似然最大化的模型参数。具体来说，设θ为待优化参数，O为所有观测值的集合，待最大化的目标函数为：  
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04262.png)   
-
+其中每个observation o属于O，是一个tuple，o=(N(v_i),v_i)，由一个central node v_i 和其context组成，在这个context里的node表示为v_j,所以v_j 属于 N(v_i).model parameters e.g. the embedding vectors of nodes 被用来计算概率p(v_j|v_i),这个条件概率是给定v_i的条件下v_j出现在其context里的概率  
+但是，在我们的设置中，每个节点拥有多个facets，activated facets of a node在不同的上下文中有所不同。此外，给定上下文的facet由上下文中节点的所有facets的组合确定。假设节点facets的分布是预先知道的，我们把它们当作表示为P的先验知识。考虑到其他信息，目标重新表述为：  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04263.png)  
+其中s(o)表示o中所有节点activated facets的一个case，所以s(o)={s(v|o) |v ∈ v i ∪ N(v i )} 其中s（v | o）是o上下文中节点v的activated facets。在给定的观测值o中，假设v_i的activated facet是k_i，且每个v_j∈N(v_i)的activated facet是k_j，则条件概率p（o|s(o),p,θ）定义为：  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04264.png)   
 
 
 
