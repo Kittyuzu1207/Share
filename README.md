@@ -12,3 +12,4 @@ some notes about NLP
 
 ### 模型
 #### [20200418 ResNet残差网络](https://github.com/Kittyuzu1207/Share/blob/master/20200418ResNet残差网络理解.md)
+#### [20200426 DeepWalk](https://github.com/Kittyuzu1207/Share/blob/master/20200426DeepWalk模型理解.md)
