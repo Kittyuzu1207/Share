@@ -21,8 +21,10 @@
 ## 2 POLYSEMOUS NETWORK EMBEDDING
 本部分以Deepwalk为基础模型，介绍了多义网络嵌入的核心思想。然后，我们设计了一个优化算法来训练多义词嵌入模型。我们还将讨论如何在不同的上下文中估计节点的方面。最后，我们介绍如何将不同方面的嵌入向量组合到下游任务中，例如分类和链接预测。
 ### 2.1 Polysemous Deepwalk
-
-
+在多义嵌入polysemous embedding的设定中，每个节点v_i和一个target embedding matrix U_i (K_i×D) 和一个context embedding matrix H_i(K_i×D)相联系。K_i是节点v_i拥有的embedding vectors的数量，考虑到其不同的facets。传统的DeepWalk model中K_i=1。D是embedding的维度，节点v_i的第k个facet的embedding vector 表示为 {U_i}^k 或{H_i}^k。不同的节点可以与不同数量的嵌入向量相关联，这取决于它们在网络中的特性的多样性。在这项工作中，为了举例说明，我们简单地让所有节点具有相同数量的嵌入向量，这样K i=K和K是一个预定义的常量整数。实际上，K的值可以由数据来估计。例如，K可以近似地设置为推荐系统中潜在兴趣类别的数目，也可以估计为学术网络中主要主题的数目。我们将在后面的部分讨论如何将facet分配给具有不同概率的节点。  
+***
+DeepWalk 使用了Skip-gram 模型,该模型使用最大似然估计进行训练，在此我们试图找到使获得的观测值的似然最大化的模型参数。具体来说，设θ为待优化参数，O为所有观测值的集合，待最大化的目标函数为：  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04262.png)   
 
 
 
