@@ -29,17 +29,39 @@ DeepWalk 使用了Skip-gram 模型,该模型使用最大似然估计进行训练
 但是，在我们的设置中，每个节点拥有多个facets，activated facets of a node在不同的上下文中有所不同。此外，给定上下文的facet由上下文中节点的所有facets的组合确定。假设节点facets的分布是预先知道的，我们把它们当作表示为P的先验知识。考虑到其他信息，目标重新表述为：  
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04263.png)  
 其中s(o)表示o中所有节点activated facets的一个case，所以s(o)={s(v|o) |v ∈ v i ∪ N(v i )} 其中s（v | o）是o上下文中节点v的activated facets。在给定的观测值o中，假设v_i的activated facet是k_i，且每个v_j∈N(v_i)的activated facet是k_j，则条件概率p（o|s(o),p,θ）定义为：  
-![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04264.png)   
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04265.png)   
 其中每一个product vector按上图计算，类似于传统的skip-gram模型中的softmax归一化，只是原本的node embedding变成了 node facet embeddings。这里的<,>表示两个向量的内积。分母作为一种归一化over all possible nodes and facets。为了可读性，省略上面公式中的P，之后不会用了。  
 ***
 由于对数函数中存在求和项，直接应用梯度下降法优化方程2∼方程4中的目标函数比较麻烦。此外，如何结合负采样[22]来近似归一化项以提高计算效率也变得不清楚。因此，我们进一步推导出目标函数如下  
-![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04265.png)   
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04266.png)   
 这种转换背后的直觉是， instead of maximizing the original objective function, we turn to maximize its lower bound 使用Jesen函数使其下界最大化。表示为上面这个亚子。除了s(o)的外求和external summation over s(o)之外，目标函数与skip gram model的类似，因此也可以采用与传统skip gram模型相同的负采样策略来近似p（vj|vi,s(o)）中的归一化项。因此，所提出的多义点嵌入模型的一个主要优点是，通过对现有学习框架的最小修改，通过增加一个额外的采样步骤 of assigning activated facets to nodes in each observation o，可以很容易地实现训练过程。  
 具体而言，给定p(s(o)|P)的分布，对(s(o))的求和项是通过facet sampling separatelyfor each node in o 来实现的。算法1中给了总体优化算法。  
-![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04266.png)   
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04267.png)   
 在初始化和节点面分布估计node-facet distribution estimation（稍后将介绍）之后，像在传统的Deepwalk（第3行）中一样，对一些随机游动进行采样。然后，对于每个观测o，在o（第7行中的循环）内的每个节点上进行多轮刻面采样several rounds of facet sampling are conducted on each node within o。在每一轮中，每个node都激活了一个facet（第8∼10行），这样对应于该facet的嵌入向量将使用SGD进行更新（第11行）。与传统的Deepwalk相比，主要的额外计算成本来自于O中的训练数据增加了采样率R的一个因子**R**。  
 多义Deepwalk的整个过程如图2所示，其中如上所述引入了“目标优化”，而有关方面分布和方面分配的其他步骤将在下一小节中详细讨论。  
-![img]![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04266.png)   
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04264.png)   
+
+### 2.2 Node-Facet Assignment 结点-方面分配
+现在我们将介绍如何获得先验知识P，以及如何在给定特定观测o的情况下确定节点的facet。目前，我们将讨论限制在无向齐次平面网络undirected homogeneous plain networks，并提供了一种仅利用网络邻接矩阵来获得节点面全局分布的方法，对于具有属性信息的网络或异构信息网络，我们可以采用其他策略，并将其留给以后的工作。设A为网络的对称邻接矩阵，在网络上进行社区发现[15][36]：
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04268.png)   
+其中 **P** 可以用梯度搜索算法，概率p(k|v)即结点v分配了第k个facet的概率，可以通过公式xxx计算。计算一个node的 facet distribution，as p(v) = [ p( 1 |v),...,p(K|v) ]。我们把p(v_i)，1≤i≤N作为先验知识p，因为它编码了对网络状态的全局理解。应用属性信息可以得到更好的估计，但超过了本文的讨论范围。   
+***
+在给定先验知识P后，我们能够估计出overall facet of each observation o as well as the facet of nodes within o。给定观测值o=（N（vi），vi），一个直接的方式是通过对the facet distributions of nodes inside the observation取平均，来获得its facet distribution p(o) 。即公式xxx。考虑到节点的activated facet依赖于观察到它的特定上下文，给定o，节点的facet s(v|o)根据分布p(v|o)进行采样，该分布p（v|o）的启发式定义如下:公式xxx。其中，我们引入min（·，·）运算符，因为如果p（k|vi）≈0，则不希望使用facet k分配节点vi，即使p(o)中的第k个条目很大。为了使其成为有效的概率分布，p（v|o）进一步规范化为和为1。   
+到目前为止，我们已经介绍了多义词Deepwalk的整个训练过程，如图2所示。在给定输入网络的情况下，我们首先将节点刻面分布估计为先验知识P。然后，执行随机游动来构造节点上下文观测。之后，在每个walk示例o中，为每个节点分配一个激活的facet。最后，通过优化更新相应面的节点嵌入。  
+
+### 2.3 Joint Engagement of Multiple Embeddings for Inference
+在训练多义模型后，我们可以得到每个节点的多个嵌入向量。接下来的问题是，在推理过程中，如何为后续任务共同考虑不同的嵌入向量。这里我们讨论两个主要的网络分析任务，包括分类和链路预测。  
+对于分类任务，对于每个node，我们的策略是combine multiple vectors into a joint vector。有一些options 比如：直接concat，或者first scale each embedding vector with the probability of belonging to the corresponding facet再concat。连接后的resultant embeddin可以直接用于node classification。我们采用的是先scale再concat。   
+对于链路预测或网络重建任务，两个节点表示之间的相似度得分越高，表明节点之间存在链路的可能性越大，可以将两个节点之间的相似度定义为：公式10。其中嵌入向量的不同facet对有助于整体相似性计算，由节点属于相应方面的概率加权。  
+
+### 2.4 Discussion
+由于不同的表征维度对数据背后的不同因素敏感，因此本文的工作可能与分离表征学习相关[9]。此外，它有助于提高表示学习的可解释性[3]，因为表示维度是根据可能与实际网络对象的具体含义或特征相关联的节点方面来分离的。  
+
+## 3 MODELS EXTENDED BY POLYSEMOUS EMBEDDING
+
+
+
+
 
 
 
