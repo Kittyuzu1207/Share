@@ -30,6 +30,16 @@ DeepWalk 使用了Skip-gram 模型,该模型使用最大似然估计进行训练
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04263.png)  
 其中s(o)表示o中所有节点activated facets的一个case，所以s(o)={s(v|o) |v ∈ v i ∪ N(v i )} 其中s（v | o）是o上下文中节点v的activated facets。在给定的观测值o中，假设v_i的activated facet是k_i，且每个v_j∈N(v_i)的activated facet是k_j，则条件概率p（o|s(o),p,θ）定义为：  
 ![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04264.png)   
+其中每一个product vector按上图计算，类似于传统的skip-gram模型中的softmax归一化，只是原本的node embedding变成了 node facet embeddings。这里的<,>表示两个向量的内积。分母作为一种归一化over all possible nodes and facets。为了可读性，省略上面公式中的P，之后不会用了。  
+***
+由于对数函数中存在求和项，直接应用梯度下降法优化方程2∼方程4中的目标函数比较麻烦。此外，如何结合负采样[22]来近似归一化项以提高计算效率也变得不清楚。因此，我们进一步推导出目标函数如下  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04265.png)   
+这种转换背后的直觉是， instead of maximizing the original objective function, we turn to maximize its lower bound 使用Jesen函数使其下界最大化。表示为上面这个亚子。除了s(o)的外求和external summation over s(o)之外，目标函数与skip gram model的类似，因此也可以采用与传统skip gram模型相同的负采样策略来近似p（vj|vi,s(o)）中的归一化项。因此，所提出的多义点嵌入模型的一个主要优点是，通过对现有学习框架的最小修改，通过增加一个额外的采样步骤 of assigning activated facets to nodes in each observation o，可以很容易地实现训练过程。  
+具体而言，给定p(s(o)|P)的分布，对(s(o))的求和项是通过facet sampling separatelyfor each node in o 来实现的。算法1中给了总体优化算法。  
+![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04266.png)   
+在初始化和节点面分布估计node-facet distribution estimation（稍后将介绍）之后，像在传统的Deepwalk（第3行）中一样，对一些随机游动进行采样。然后，对于每个观测o，在o（第7行中的循环）内的每个节点上进行多轮刻面采样several rounds of facet sampling are conducted on each node within o。在每一轮中，每个node都激活了一个facet（第8∼10行），这样对应于该facet的嵌入向量将使用SGD进行更新（第11行）。与传统的Deepwalk相比，主要的额外计算成本来自于O中的训练数据增加了采样率R的一个因子**R**。  
+多义Deepwalk的整个过程如图2所示，其中如上所述引入了“目标优化”，而有关方面分布和方面分配的其他步骤将在下一小节中详细讨论。  
+![img]![img](https://github.com/Kittyuzu1207/Share/blob/master/img/04266.png)   
 
 
 
