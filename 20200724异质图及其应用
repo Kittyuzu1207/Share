@@ -1,0 +1,34 @@
+# 异质图和其在文本挖掘中的应用
+Rpl：传统：抽取特征  
+DL：端到端的表示学习  
+Network Emb: 低维特征向量表示  
+	Shallow model: Laplacian eigenmaps; deepwalk, node2vec  
+	Deep model: DNGR,SDNE;GNN: GCN,GAT  
+异质图：文献数据；社交网络；知识图谱；推荐  
+
+## 异质图概念
+	网络模式schema：meta-level description  
+	Meta path:元路径：relation sequences connecting object pairs  
+  真实网络：动态异质图  
+
+## Deep Model
+HERec  
+HIN2Vec  
+MCRec  
+HeGAN  
+RHINE：分别处理不同关系  
+
+NeuACF:History Aspect;Brand Aspect  
+
+## 异质图中的attention
+基于不同的元路径：node-level attention;  
+HetGAN  
+
+
+## Application
+- 短文本分类：语义稀疏模糊，少labeled数据；solutions: topics，entities，attention
+- 学习一些topics使得文本之间有关联，实体…
+- HGAT 不同类型邻居设置不同权重
+-	新闻推荐：用户长短期偏好，high-order
+-	实体消歧
+-	构造图：依靠领域知识，有效的对象的内在关联
